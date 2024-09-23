@@ -12,7 +12,7 @@ public:
     OpenFile();
 
     // Member function declaration
-    std::vector<uint8_t> open(const char* path);
+    std::vector<uint8_t> open(const char* path, int isProtected);
 };
 
 #endif

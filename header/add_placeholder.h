@@ -13,7 +13,7 @@ public:
     AddPlaceHolder();
 
     // Member function declaration
-    std::unordered_map<std::string, std::string> addPlaceholder(const char* pdf_path, const char* image_path, int page, int visibility, float x, float y, float width, float height, int isSeal);
+    std::unordered_map<std::string, std::string> addPlaceholder(int type, const char* pdf_path, int isProtected, const char* character, const char* imageorurl, int page, float x, float y, float width, float height, int isSeal);
 };
 
 #endif

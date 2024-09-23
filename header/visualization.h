@@ -17,7 +17,7 @@ public:
     Visualization();
 
     // Member function declaration
-    std::vector<double> get_position(const char* pdf_path, int page_num, const char* target_char);
+    std::vector<double> get_position(std::vector<unsigned char> pdf_data, int page_num, const char* target_char);
     std::vector<uint8_t> get_image(std::vector<unsigned char> image_data);
 };
 

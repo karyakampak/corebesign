@@ -1,0 +1,63 @@
+1. membuat tap baru pada directory Formula Homebrew
+    $brew tap-new <github_username>/<tap_name> (brew tap-new karyakampak/besign)
+    This creates a new GitHub repository <github_username>/homebrew-<tap_name> for your formulae.
+
+2. create file .rb to Formula
+    $nano /path/to/Homebrew/Library/Taps/Formula/besign.rb (/usr/local/Homebrew/Library/Taps/karyakampak/homebrew-besign/Formula/besign.rb)
+
+    # EXAMPLE CODE
+
+    class Besign < Formula
+        desc "Program for make signature object on pdf"
+        homepage "https://github.com/karyakampak/homebrew-besign"
+        url "https://github.com/karyakampak/homebrew-besign/archive/refs/tags/v1.0.4.tar.gz"
+        sha256 "50e6264287c7512b91176aa240dcc637718fb6b99f7977bc993fd7bc1e831923"
+        license "MIT"
+
+        depends_on "cmake" => :build
+        # depends_on "python@3"
+        # depends_on "opencv"
+        depends_on "qrencode"
+        depends_on "openssl"
+        depends_on "curl"
+        depends_on "nlohmann-json"
+        depends_on "ossp-uuid"
+
+
+        def install
+            cd "build" do
+            system "cmake", "..", *std_cmake_args
+            system "make"
+            system "make", "install"
+            end
+        end
+
+        test do
+            system "#{bin}/besign", "--version"
+        end
+    end
+
+    # GET DIGEST OF GITHUB TAGS FOR sha256
+        # curl -LO https://github.com/karyakampak/homebrew-besign/archive/refs/tags/v1.0.1.tar.gz
+        # shasum -a 256 v1.0.1.tar.gz
+        # for unsip $tar -xzvf v1.0.1.tar.gz
+
+
+
+3. Install program
+    $brew install <github_username>/<tap_name>/<.rb filename> (brew install karyakampak/besign/besign)
+
+
+4. If using online homebrew
+    a. Go to the Homebrew/homebrew-core repository on GitHub.
+    b. Click on "Fork" to create a personal fork of the repository. Alternatively, if you are using a custom tap, you should have your own repository under your GitHub account or organization.
+
+    a. git clone https://github.com/yourusername/homebrew-besign.git
+    b. cd homebrew-besign
+    c. mkdir -p Formula
+    d. cp /path/to/your/besign.rb Formula/
+    e. git add Formula/besign.rb
+    f. git commit -m "Add besign formula"
+    g. git push origin main
+    h. brew tap yourusername/besign (Test Locally)
+    i. brew install besign

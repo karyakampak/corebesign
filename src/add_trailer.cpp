@@ -29,9 +29,12 @@ std::unordered_map<std::string, std::string> create_buffer_trailer(const std::ve
     trailer += "trailer\n<<";
     trailer += "\n/Size " + std::to_string(object_id.back() + 1);
     trailer += "\n/Root " + read_pdf.at("rootRef");
-    trailer += "\n/Info " + read_pdf.at("infoRef");
+    if(read_pdf.at("infoRef") != "none"){
+        trailer += "\n/Info " + read_pdf.at("infoRef");
+    }
+    // trailer += "\n/Info " + read_pdf.at("infoRef");
     if(read_pdf.at("idRef") != "none"){
-        trailer += "\n/ID " + read_pdf.at("idRef")+" <"+adns.generateUUID2()+"> ]";
+        trailer += "\n/ID " + read_pdf.at("idRef")+"> <"+adns.generateUUID2()+">]";
         // trailer += "\n/ID " + read_pdf.at("idRef");
     }
     trailer += "\n/Prev " + read_pdf.at("xRefPosition");

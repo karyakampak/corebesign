@@ -422,6 +422,7 @@ std::unordered_map<std::string, std::vector<uint8_t> > get_signature(std::string
 
                 // Parse JSON string
                 json j = json::parse(responseData);
+                // std::cout << responseData << std::endl;
                 auto cmsSignedDataHashMap = j["data"]["cmsSignedDataHashMap"];
 
                 if (cmsSignedDataHashMap.contains("0") && !cmsSignedDataHashMap["0"].is_null()) {

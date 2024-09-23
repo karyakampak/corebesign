@@ -37,10 +37,16 @@ std::unordered_map<std::string, std::string> GetPdfComponent::getPdfComponent(st
     // uint32_t xref_position = startxref_position;
 
     std::vector<uint8_t> root_ref_func = adns.get_value(trailer_vec, adns.stringToVector("/Root"));
-    std::string root_ref(root_ref_func.begin(), root_ref_func.end());
+    std::string root_ref = "none";
+    if (!root_ref_func.empty()) {
+        root_ref = adns.vectorToString(root_ref_func);
+    }
     
     std::vector<uint8_t> info_ref_func = adns.get_value(trailer_vec, adns.stringToVector("/Info"));
-    std::string info_ref(info_ref_func.begin(), info_ref_func.end());
+    std::string info_ref = "none";
+    if (!info_ref_func.empty()) {
+        info_ref = adns.vectorToString(info_ref_func);
+    }
     
     std::vector<uint8_t> id_ref_func = adns.get_value_id(trailer_vec, adns.stringToVector("/ID"));
     // Check if the vector is empty

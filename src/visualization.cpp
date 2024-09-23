@@ -46,7 +46,7 @@ std::vector<uint8_t> process_image(std::vector<unsigned char> image_data) {
     Py_Initialize();
 
     // Import the Cython module
-    PyObject* pName = PyUnicode_DecodeFSDefault("helper");
+    PyObject* pName = PyUnicode_DecodeFSDefault("besign_helper");
     PyObject* pModule = PyImport_Import(pName);
     Py_XDECREF(pName);
 
@@ -82,15 +82,18 @@ std::vector<uint8_t> process_image(std::vector<unsigned char> image_data) {
     }
 
     Py_Finalize();
+    
+    return {};
 }
 
-std::vector<double> find_char_position(const char* pdf_path, int page_num, const char* target_char) {
+std::vector<double> find_char_position(std::vector<unsigned char> pdf_data, int page_num, const char* target_char) {
     std::vector<double> result;
     // Initialize the Python interpreter
     Py_Initialize();
+
     
     // Import the Cython module
-    PyObject* pName = PyUnicode_DecodeFSDefault("helper");
+    PyObject* pName = PyUnicode_DecodeFSDefault("besign_helper");
     PyObject* pModule = PyImport_Import(pName);
     Py_XDECREF(pName);
     
@@ -101,7 +104,7 @@ std::vector<double> find_char_position(const char* pdf_path, int page_num, const
         if (pFunc && PyCallable_Check(pFunc)) {
             // Prepare arguments
             PyObject* pArgs = PyTuple_Pack(3,
-                PyUnicode_FromString(pdf_path),
+                PyBytes_FromStringAndSize(reinterpret_cast<const char*>(pdf_data.data()), pdf_data.size()),
                 PyLong_FromLong(page_num),
                 PyUnicode_FromString(target_char)
             );
@@ -150,10 +153,12 @@ std::vector<double> find_char_position(const char* pdf_path, int page_num, const
     
     // Finalize the Python interpreter
     Py_Finalize();
+
+    return result;
 }
 
-std::vector<double> Visualization::get_position(const char* pdf_path, int page_num, const char* target_char){
-    std::vector<double> obj = find_char_position(pdf_path, page_num, target_char);
+std::vector<double> Visualization::get_position(std::vector<unsigned char> pdf_data, int page_num, const char* target_char){
+    std::vector<double> obj = find_char_position(pdf_data, page_num, target_char);
     // std::vector<uint8_t> obj = process_qr(url);
     
     return obj;

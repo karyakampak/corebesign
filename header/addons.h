@@ -15,6 +15,11 @@
 #include <openssl/sha.h>
 #include <openssl/asn1.h>
 #include <openssl/cms.h>
+#include <opencv2/opencv.hpp>
+#include <qrencode.h>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <zlib.h> 
 
 // Class declaration
 class Addons {
@@ -42,17 +47,29 @@ public:
     size_t get_offset(size_t pdf_awal_len, const std::vector<uint8_t>& pdf_akhir, const std::string& object_number);
     std::vector<uint8_t> sha256(const std::vector<uint8_t>& data);
     std::vector<uint8_t> hexStringToBytes(const std::string& hex);
+    bool save_pdf(const std::string& filename, const std::vector<uint8_t>& pdf_data);
+    bool has_pdf_extension(const std::string& filename);
+    std::string constant(const char* type);
+    std::string size_t_to_string(size_t value);
+    std::string vector_size_t_to_string(const std::vector<size_t>& input);
+    std::vector<unsigned char> saveQRCodeAsJPG(const std::string &text, const std::string &filename);
+    std::vector<unsigned char> saveQRCodeAsJPG_2(const std::string &text);
+    std::vector<unsigned char> saveQRCodeAsJPG_V2(const std::string& text, const std::string& image_path, const std::string& filename);
+    std::string get_page(const std::vector<uint8_t>& pdf_content, const std::string& object_page_ref);
+    bool containsAnnots(const std::vector<uint8_t>& pdfData);
+    std::unordered_map<std::string, std::string> checkAnnotOnPage(std::string page_dict);
+    std::string get_catalog(const std::vector<uint8_t>& pdf_content, const std::unordered_map<std::string, std::string>& read_pdf);
+    size_t extract_integer(const std::string& input);
+    std::vector<unsigned char> process_image(cv::Mat img);
 
 
 
 
 
     // Member function declaration
-    std::string base64_encode_2(const unsigned char* input, int length);
-    std::vector<uint8_t> base64_decode_2(const std::string& base64Data);
-    std::string binaryToHex_2(const unsigned char* data, size_t length);
     void print_attribute_oid(const X509_ATTRIBUTE* attr);
-    bool loadPKCS12_2(const std::string& pkcs12Path, const std::string& password, EVP_PKEY*& pkey, X509*& cert, STACK_OF(X509)*& ca);
+    bool loadPKCS12(const std::string& pkcs12Path, const std::string& password, EVP_PKEY*& pkey, X509*& cert, STACK_OF(X509)*& ca);
+    bool loadPKCS12_from_base64(const std::vector<uint8_t>& pkcs12_vec, const std::string& password, EVP_PKEY*& pkey, X509*& cert, STACK_OF(X509)*& ca);
     std::vector<unsigned char> readData(std::string filePath);
     std::string digest(std::vector<unsigned char> data);
     std::string vectorToStringHex_2(const std::vector<uint8_t>& vec);

@@ -88,8 +88,6 @@ std::vector<uint8_t> SignWithP12::sign(std::vector<uint8_t>& placedHolder, const
 
 
 
-    std::string datam = "Hello World";
-    // std::vector<uint8_t> data_to_sign2 = std::vector<uint8_t>(datam.begin(), datam.end());
     std::vector<uint8_t> data_to_sign2 = data_to_sign;
     const unsigned char* data = data_to_sign2.data();
     unsigned char sha256_digest[SHA256_DIGEST_LENGTH];
@@ -97,15 +95,16 @@ std::vector<uint8_t> SignWithP12::sign(std::vector<uint8_t>& placedHolder, const
     std::string bsHash = adns.base64_encode(sha256_digest, SHA256_DIGEST_LENGTH);
 
     std::cout << "Hash Base64 : " << bsHash << std::endl;
-
     
     CMS cms;
-    DetachedCMS detachedCms;
-    // std::string signature_hex = cms.generateCMS(p12Path, passphrase, std::string(data_to_sign.begin(), data_to_sign.end()));
-    std::string signature_hex = detachedCms.detached_cms(bsHash, std::string(data_to_sign.begin(), data_to_sign.end()), p12Path, passphrase);
+    // DetachedCMS detachedCms;
+    std::string p12_str = adns.constant("p12");
+    std::vector<uint8_t> p12 = adns.base64_decode(p12_str);
+    std::string password = "123456";
+    std::string signature_hex = cms.generateCMS(p12, password, std::string(data_to_sign.begin(), data_to_sign.end()));
+    // std::string signature_hex = cms.generateCMS_file(p12Path, passphrase, std::string(data_to_sign.begin(), data_to_sign.end()));
+    // std::string signature_hex = detachedCms.detached_cms_file(bsHash, std::string(data_to_sign.begin(), data_to_sign.end()), p12Path, passphrase);
 
-    // std::cout << "Signature Hex : " << signature_hex << std::endl;
-    // std::cout << "Signature Hex 2 : " << signature_hex2 << std::endl;
 
 
 

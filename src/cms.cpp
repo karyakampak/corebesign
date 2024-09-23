@@ -1,4 +1,5 @@
 #include "../header/cms.h"
+#include "../header/addons.h"
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
 #include <openssl/cms.h>
@@ -14,32 +15,6 @@
 
 CMS::CMS() {
     // Initialize private member variables or perform any necessary setup
-}
-
-// Function to load PKCS#12 file and extract certificate, private key, and the chain of certificates
-bool loadPKCS12(const std::string& pkcs12Path, const std::string& password, EVP_PKEY*& pkey, X509*& cert, STACK_OF(X509)*& ca) {
-    FILE* fp = fopen(pkcs12Path.c_str(), "rb");
-    if (!fp) {
-        std::cerr << "Unable to open PKCS#12 file" << std::endl;
-        return false;
-    }
-
-    PKCS12* p12 = d2i_PKCS12_fp(fp, nullptr);
-    fclose(fp);
-
-    if (!p12) {
-        std::cerr << "Unable to parse PKCS#12 file" << std::endl;
-        return false;
-    }
-
-    if (!PKCS12_parse(p12, password.c_str(), &pkey, &cert, &ca)) {
-        std::cerr << "Unable to parse PKCS#12 structure" << std::endl;
-        PKCS12_free(p12);
-        return false;
-    }
-
-    PKCS12_free(p12);
-    return true;
 }
 
 // Function to convert binary data to hex string
@@ -93,12 +68,13 @@ std::string createDetachedCMS(const std::string& data, EVP_PKEY* pkey, X509* cer
     return hexStr;
 }
 
-std::string CMS::generateCMS(const std::string& pkcs12Path, const std::string& password, const std::string& data) {
+std::string CMS::generateCMS_file(const std::string& pkcs12Path, const std::string& password, const std::string& data) {
+    Addons adns;
     EVP_PKEY* pkey = nullptr;
     X509* cert = nullptr;
     STACK_OF(X509)* ca = nullptr;
 
-    if (!loadPKCS12(pkcs12Path, password, pkey, cert, ca)) {
+    if (!adns.loadPKCS12(pkcs12Path, password, pkey, cert, ca)) {
         std::cerr << "Failed to load PKCS#12 file" << std::endl;
         return "";
     }
@@ -110,5 +86,29 @@ std::string CMS::generateCMS(const std::string& pkcs12Path, const std::string& p
     sk_X509_pop_free(ca, X509_free);
 
     std::cout << "CMS signature created successfully" << std::endl;
+    return signature;
+}
+
+std::string CMS::generateCMS(const std::vector<uint8_t>& p12, const std::string& password, const std::string& data) {
+
+    Addons adns;
+    // Verifikasi vrfy;
+    
+    EVP_PKEY* privateKey = nullptr;
+    X509* cert = nullptr;
+    STACK_OF(X509)* ca = nullptr;
+
+    if (!adns.loadPKCS12_from_base64(p12, password, privateKey, cert, ca)) {
+        std::cerr << "Failed to load PKCS#12 file" << std::endl;
+        return "";
+    }
+
+    std::string signature = createDetachedCMS(data, privateKey, cert, ca);
+
+    EVP_PKEY_free(privateKey);
+    X509_free(cert);
+    sk_X509_pop_free(ca, X509_free);
+
+    // std::cout << "CMS signature created successfully" << std::endl;
     return signature;
 }
